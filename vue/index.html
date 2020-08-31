@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.9/vue.min.js"></script>
+    <!-- 1. js文件是一个静态资源  http 1.0加上了请求头部，text/js 同样的静态文件还有image/png  text/html  text/css -->
+    <!-- 动态资源  database 服务器压力很大  TCP连接 ->HTTP 请求响应 连接上限 web应用是多线程的 nginx 启动时会有一个进程-->
+    <!-- 2. bootcdn.com 是动态的，必须在服务器上找资源的  node 读取mysql->template-->
+    <!-- 当用户和访问量变大之后,就得访用nginx,做负载均衡的功能 proxy -->
+    <!-- 分布式 用户怎么来 通过ip ->url cdn分流-->
+    <!-- 一个进程可以启动多个线程 -->
+    <!-- 动态ip ->电脑mac地址 本机网卡号 -->
+    <div id="root">
+        <div @click=changeData>切换数据</div>
+        <li v-for="item in list" :key="item.id">{{item.text}}</li>
+    </div>
+    <script>
+        // MVVM的范围
+        new Vue({
+            el: '#root',
+            data() {
+                return {
+                    list: [], //数据 vnode diff做一个DOM的更新
+                    list1: [], //oldState 当前的DOM
+                    list2: [], //newState 更新的DOM
+                    nowdate: '',
+                    updateTime: ''
+                }
+            },
+            methods: {
+                changeData() {
+                    this.nowdate = Date.now();
+                    this.list = this.list2;
+                }
+            },
+            created() {
+                for (let i = 0; i <= 10000; i++) {
+                    this.list1.push({
+                        id: i,
+                        text: i
+                    })
+                    this.list2.push({
+                        id: i * 2,
+                        text: 10000 - i
+                    })
+                }
+                this.list = this.list1
+            },
+            updated() {
+                const date = Date.now();
+                console.log(`updateTime；${date - this.nowdate}`)
+            }
+        })
+    </script>
+</body>
+
+</html>
